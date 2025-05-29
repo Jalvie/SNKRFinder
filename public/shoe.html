@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNKRfinder - Shoe Details</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        main {
+            padding-top: 120px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 20px 40px;
+        }
+
+        .shoe-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid black;
+        }
+
+        .shoe-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .shoe-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .shoe-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: rgb(50, 50, 50);
+            margin: 0;
+        }
+
+        .shoe-price {
+            font-size: 1.5rem;
+            color: rgb(50, 50, 50);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .status-just-in { background-color: #4CAF50; }
+        .status-coming-soon { background-color: #2196F3; }
+        .status-sale { background-color: hsl(0, 83%, 50%); }
+
+        .shoe-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: rgb(50, 50, 50);
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: rgb(70, 70, 70);
+        }
+
+        .sizes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .size-button {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .size-button.available {
+            background: white;
+            border-color: #333;
+        }
+
+        .size-button.available:hover {
+            background: hsl(0, 83%, 50%);
+            color: white;
+            border-color: hsl(0, 83%, 50%);
+        }
+
+        .size-button.unavailable {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .store-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .view-btn {
+            flex: 1;
+            padding: 15px;
+            background-color: hsl(0, 83%, 50%);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: rgb(50, 50, 50);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid hsl(0, 83%, 50%);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid hsl(0, 83%, 50%);
+            color: hsl(0, 83%, 50%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px auto;
+            text-align: center;
+            max-width: 600px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .shoe-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .shoe-title {
+                font-size: 1.5rem;
+            }
+
+            .shoe-price {
+                font-size: 1.2rem;
+            }
+
+            .store-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <span><span class="red">SNKR</span>Finder</span>
+        <div class="headlinks">
+            <a href="/"><img src="/assets/img/icons/home.png" alt="home"></a>
+            <a href="/search"><img src="/assets/img/icons/search.png" alt="search"></a>
+        </div>
+    </header>
+
+    <main>
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading shoe details...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            <strong>Error!</strong>
+            <span id="errorMessage"></span>
+        </div>
+
+        <div id="shoe-container" class="shoe-container" style="display: none;">
+            <!-- Shoe details will be inserted here -->
+        </div>
+    </main>
+
+    <script>
+        async function loadShoeDetails() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const errorMessage = document.getElementById('errorMessage');
+            const shoeContainer = document.getElementById('shoe-container');
+
+            try {
+                loading.style.display = 'block';
+                error.style.display = 'none';
+                shoeContainer.style.display = 'none';
+
+                const shoeId = window.location.pathname.split('/').pop();
+                const response = await fetch(`/api/shoe/${shoeId}`);
+                const shoe = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(shoe.error || 'Failed to fetch shoe details');
+                }
+
+                const statusClass = shoe.status?.toLowerCase().includes('just in') ? 'status-just-in' :
+                                  shoe.status?.toLowerCase().includes('coming soon') ? 'status-coming-soon' :
+                                  shoe.status?.toLowerCase().includes('sale') ? 'status-sale' : '';
+
+                shoeContainer.innerHTML = `
+                    <img src="${shoe.imageUrl}" alt="${shoe.name}" class="shoe-image">
+                    <div class="shoe-details">
+                        <h1 class="shoe-title">${shoe.name}</h1>
+                        ${shoe.status ? `<span class="status-badge ${statusClass}">${shoe.status}</span>` : ''}
+                        <p class="shoe-price">${shoe.price}</p>
+                        
+                        <div class="shoe-info">
+                            ${shoe.description ? `
+                                <div class="info-item">
+                                    <div class="info-label">Description</div>
+                                    <div class="info-value">${shoe.description}</div>
+                                </div>
+                            ` : ''}
+                            
+                            ${shoe.colorway ? `
+                                <div class="info-item">
+                                    <div class="info-label">Colorway</div>
+                                    <div class="info-value">${shoe.colorway}</div>
+                                </div>
+                            ` : ''}
+                            
+                            ${shoe.style ? `
+                                <div class="info-item">
+                                    <div class="info-label">Style Code</div>
+                                    <div class="info-value">${shoe.style}</div>
+                                </div>
+                            ` : ''}
+                            
+                            ${shoe.sizes && shoe.sizes.length > 0 ? `
+                                <div class="info-item">
+                                    <div class="info-label">Available Sizes</div>
+                                    <div class="sizes-grid">
+                                        ${shoe.sizes.map(size => `
+                                            <a href="${shoe.productUrl}" target="_blank" 
+                                               class="size-button ${size.available ? 'available' : 'unavailable'}"
+                                               ${!size.available ? 'onclick="return false;"' : ''}>
+                                                ${size.size}
+                                            </a>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="store-buttons">
+                            <a href="${shoe.productUrl}" target="_blank" class="view-btn">
+                                View on Nike
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                shoeContainer.style.display = 'grid';
+            } catch (err) {
+                error.style.display = 'block';
+                errorMessage.textContent = err.message;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // Load shoe details when the page loads
+        document.addEventListener('DOMContentLoaded', loadShoeDetails);
+    </script>
+</body>
+</html> 
