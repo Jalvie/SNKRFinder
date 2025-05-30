@@ -2,14 +2,18 @@ const express = require("express");
 const NodeCache = require('node-cache');
 const { scrapeNikeReleases } = require('./api/nikeScraper');
 const { scrapeShoeDetails } = require('./api/shoeScraper');
-const { saveReleases, getLatestReleases, getShoeById } = require('./api/database');
+const { saveReleases, saveShoeDetails, getLatestReleases, getShoeById, getShoesNeedingUpdate } = require('./api/database');
 const path = require('path');
 
 const port = process.env.PORT || 3000;
 const app = express();
 
 // Initialize cache with 3 hours TTL
-const cache = new NodeCache({ stdTTL: 60 * 60 * 3 });
+const cache = new NodeCache({ 
+    stdTTL: 60 * 60 * 3, // 3 hours
+    checkperiod: 60 * 5, // Check for expired keys every 5 minutes
+    useClones: false // Store references instead of cloning objects
+});
 
 // Serve static files with correct MIME types
 app.use(express.static(path.join(__dirname, 'public'), {
@@ -19,6 +23,63 @@ app.use(express.static(path.join(__dirname, 'public'), {
         }
     }
 }));
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).json({ 
+        error: 'Internal server error',
+        message: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+});
+
+// Function to update shoe details
+async function updateShoeDetails() {
+    try {
+        console.log('🔄 Starting daily shoe details update...');
+        const shoesToUpdate = await getShoesNeedingUpdate();
+        console.log(`📦 Found ${shoesToUpdate.length} shoes needing update`);
+
+        for (const shoe of shoesToUpdate) {
+            try {
+                console.log(`🔍 Updating details for shoe: ${shoe.id}`);
+                const details = await scrapeShoeDetails(shoe.productUrl);
+                await saveShoeDetails(shoe.id, details);
+                console.log(`✅ Updated details for shoe: ${shoe.id}`);
+                
+                // Wait a bit between requests to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            } catch (error) {
+                console.error(`❌ Error updating shoe ${shoe.id}:`, error);
+            }
+        }
+        
+        console.log('✨ Daily update completed');
+    } catch (error) {
+        console.error('❌ Error in daily update:', error);
+    }
+}
+
+// Run daily update at midnight
+function scheduleDailyUpdate() {
+    const now = new Date();
+    const night = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1, // tomorrow
+        0, 0, 0 // midnight
+    );
+    const msToMidnight = night.getTime() - now.getTime();
+
+    setTimeout(() => {
+        updateShoeDetails();
+        // Schedule next update
+        setInterval(updateShoeDetails, 24 * 60 * 60 * 1000);
+    }, msToMidnight);
+}
+
+// Start daily update scheduler
+scheduleDailyUpdate();
 
 // Endpoint to get Nike releases
 app.get('/api/nike-releases', async (req, res) => {
@@ -33,6 +94,10 @@ app.get('/api/nike-releases', async (req, res) => {
         // If not in cache, scrape new data
         console.log('🔍 Scraping new data');
         const releases = await scrapeNikeReleases();
+        
+        if (!releases || releases.length === 0) {
+            throw new Error('No releases found');
+        }
         
         // Save to database
         await saveReleases(releases);
@@ -50,14 +115,17 @@ app.get('/api/nike-releases', async (req, res) => {
         try {
             console.log('🔄 Falling back to database');
             const dbReleases = await getLatestReleases();
-            if (dbReleases.length > 0) {
+            if (dbReleases && dbReleases.length > 0) {
                 return res.json(dbReleases);
             }
         } catch (dbError) {
             console.error('Database fallback failed:', dbError);
         }
         
-        res.status(500).json({ error: 'Failed to fetch Nike releases' });
+        res.status(500).json({ 
+            error: 'Failed to fetch Nike releases',
+            message: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 });
 
@@ -70,6 +138,10 @@ app.get('/shoe/:id', (req, res) => {
 app.get('/api/shoe/:id', async (req, res) => {
     try {
         const requestedId = req.params.id;
+        
+        if (!requestedId) {
+            return res.status(400).json({ error: 'Shoe ID is required' });
+        }
         
         // Try to get the shoe from the database first
         console.log('🔍 Looking up shoe in database...');
@@ -98,25 +170,38 @@ app.get('/api/shoe/:id', async (req, res) => {
                 // Try to find a shoe where the ID starts with the requested ID
                 shoe = releases.find(s => s.id.startsWith(requestedId));
                 if (!shoe) {
-                    return res.status(404).json({ error: 'Shoe not found' });
+                    return res.status(404).json({ 
+                        error: 'Shoe not found',
+                        message: `No shoe found with ID starting with: ${requestedId}`
+                    });
                 }
             }
         }
 
-        // Get detailed information for the shoe
-        console.log('🔍 Fetching detailed shoe information...');
-        const details = await scrapeShoeDetails(shoe.productUrl);
-        
-        // Combine basic and detailed information
-        const fullDetails = {
-            ...shoe,
-            ...details
-        };
-        
-        res.json(fullDetails);
+        // Check if we need to update the details
+        const needsUpdate = !shoe.last_updated || 
+            (new Date() - new Date(shoe.last_updated)) > 24 * 60 * 60 * 1000;
+
+        if (needsUpdate && shoe.productUrl) {
+            console.log('🔄 Shoe details need updating...');
+            try {
+                const details = await scrapeShoeDetails(shoe.productUrl);
+                await saveShoeDetails(shoe.id, details);
+                shoe = { ...shoe, ...details };
+                console.log('✅ Updated shoe details');
+            } catch (error) {
+                console.error('❌ Error updating shoe details:', error);
+                // Continue with existing details if update fails
+            }
+        }
+
+        res.json(shoe);
     } catch (error) {
         console.error('Error fetching shoe details:', error);
-        res.status(500).json({ error: 'Failed to fetch shoe details' });
+        res.status(500).json({ 
+            error: 'Failed to fetch shoe details',
+            message: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 });
 

@@ -24,11 +24,58 @@
             border: 2px solid black;
         }
 
-        .shoe-image {
+        .shoe-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .main-image {
             width: 100%;
             height: auto;
             border-radius: 8px;
             border: 1px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .main-image:hover {
+            transform: scale(1.02);
+        }
+
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+        }
+
+        .thumbnail {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .thumbnail:hover {
+            transform: scale(1.05);
+            border-color: hsl(0, 83%, 50%);
+        }
+
+        .thumbnail.active {
+            border: 2px solid hsl(0, 83%, 50%);
+        }
+
+        .coming-soon-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #2196F3;
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 20px;
         }
 
         .shoe-details {
@@ -92,12 +139,20 @@
         }
 
         .size-button {
+            position: relative;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
         }
 
         .size-button.available {
@@ -115,6 +170,30 @@
             background: #f5f5f5;
             color: #999;
             cursor: not-allowed;
+            position: relative;
+        }
+
+        .out-of-stock-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: hsl(0, 83%, 50%);
+            color: white;
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .size-button.unavailable::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #999;
+            transform: rotate(-45deg);
         }
 
         .store-buttons {
@@ -134,11 +213,20 @@
             transition: all 0.3s ease;
             font-weight: 600;
             font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .view-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .view-btn img {
+            width: 20px;
+            height: 20px;
         }
 
         .loading {
@@ -173,6 +261,78 @@
             text-align: center;
             max-width: 600px;
             font-weight: 500;
+        }
+
+        .launch-info {
+            background: rgba(255, 0, 0, 0.05);
+            border: 1px solid hsl(0, 83%, 50%);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .launch-date {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: hsl(0, 83%, 50%);
+            margin-bottom: 10px;
+        }
+
+        .launch-time {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .launch-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .launch-btn {
+            padding: 15px;
+            background-color: hsl(0, 83%, 50%);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .launch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .launch-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .launch-btn.secondary {
+            background-color: #333;
+        }
+
+        .launch-btn.secondary:hover {
+            background-color: #444;
+        }
+
+        .launch-btn.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .launch-btn.disabled:hover {
+            transform: none;
+            box-shadow: none;
         }
 
         @media (max-width: 768px) {
@@ -245,11 +405,54 @@
                                   shoe.status?.toLowerCase().includes('sale') ? 'status-sale' : '';
 
                 shoeContainer.innerHTML = `
-                    <img src="${shoe.imageUrl}" alt="${shoe.name}" class="shoe-image">
+                    <div class="shoe-gallery">
+                        <img src="${shoe.imageUrl}" alt="${shoe.name}" class="main-image" id="mainImage">
+                        ${shoe.imageUrls && shoe.imageUrls.length > 1 ? `
+                            <div class="thumbnail-grid">
+                                ${shoe.imageUrls.map((url, index) => `
+                                    <img src="${url}" alt="${shoe.name} - View ${index + 1}" 
+                                         class="thumbnail ${index === 0 ? 'active' : ''}"
+                                         onclick="updateMainImage('${url}', this)">
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
                     <div class="shoe-details">
                         <h1 class="shoe-title">${shoe.name}</h1>
                         ${shoe.status ? `<span class="status-badge ${statusClass}">${shoe.status}</span>` : ''}
                         <p class="shoe-price">${shoe.price}</p>
+                        
+                        ${shoe.status?.toLowerCase().includes('just in') ? `
+                            <div class="launch-info">
+                                <div class="launch-date">Launching Today</div>
+                                <div class="launch-time">Available Now</div>
+                                <div class="launch-buttons">
+                                    <a href="${shoe.productUrl}" target="_blank" class="launch-btn">
+                                        <img src="/assets/img/icons/nike.png" alt="Nike">
+                                        Buy on Nike
+                                    </a>
+                                    <a href="${shoe.productUrl}" target="_blank" class="launch-btn secondary">
+                                        <img src="/assets/img/icons/cart.png" alt="Cart">
+                                        Add to Cart
+                                    </a>
+                                </div>
+                            </div>
+                        ` : shoe.status?.toLowerCase().includes('coming soon') ? `
+                            <div class="launch-info">
+                                <div class="launch-date">Coming Soon</div>
+                                <div class="launch-time">Launch Date TBA</div>
+                                <div class="launch-buttons">
+                                    <a href="${shoe.productUrl}" target="_blank" class="launch-btn">
+                                        <img src="/assets/img/icons/nike.png" alt="Nike">
+                                        View on Nike
+                                    </a>
+                                    <button class="launch-btn secondary disabled">
+                                        <img src="/assets/img/icons/notify.png" alt="Notify">
+                                        Notify Me
+                                    </button>
+                                </div>
+                            </div>
+                        ` : ''}
                         
                         <div class="shoe-info">
                             ${shoe.description ? `
@@ -273,26 +476,22 @@
                                 </div>
                             ` : ''}
                             
-                            ${shoe.sizes && shoe.sizes.length > 0 ? `
+                            ${shoe.isLaunched && shoe.sizes && shoe.sizes.length > 0 ? `
                                 <div class="info-item">
                                     <div class="info-label">Available Sizes</div>
                                     <div class="sizes-grid">
                                         ${shoe.sizes.map(size => `
                                             <a href="${shoe.productUrl}" target="_blank" 
                                                class="size-button ${size.available ? 'available' : 'unavailable'}"
-                                               ${!size.available ? 'onclick="return false;"' : ''}>
+                                               ${!size.available ? 'onclick="return false;"' : ''}
+                                               title="${size.outOfStock ? 'Out of Stock' : size.available ? 'Available' : 'Unavailable'}">
                                                 ${size.size}
+                                                ${size.outOfStock ? '<span class="out-of-stock-badge">OOS</span>' : ''}
                                             </a>
                                         `).join('')}
                                     </div>
                                 </div>
                             ` : ''}
-                        </div>
-
-                        <div class="store-buttons">
-                            <a href="${shoe.productUrl}" target="_blank" class="view-btn">
-                                View on Nike
-                            </a>
                         </div>
                     </div>
                 `;
@@ -304,6 +503,17 @@
             } finally {
                 loading.style.display = 'none';
             }
+        }
+
+        function updateMainImage(url, thumbnail) {
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = url;
+            
+            // Update active thumbnail
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            thumbnail.classList.add('active');
         }
 
         // Load shoe details when the page loads
