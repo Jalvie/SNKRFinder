@@ -66,6 +66,12 @@ main {
     color: rgb(50, 50, 50);
 }
 
+.store-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .product-price {
     color: rgb(50, 50, 50);
     margin-bottom: 15px;
@@ -74,7 +80,7 @@ main {
 
 .view-btn {
     display: block;
-    width: 100%;
+    width: 40%;
     padding: 12px;
     background-color: hsl(0, 83%, 50%);
     color: white;

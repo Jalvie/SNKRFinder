@@ -17,9 +17,15 @@ const cache = new NodeCache({
 
 // Serve static files with correct MIME types
 app.use(express.static(path.join(__dirname, 'public'), {
-    setHeaders: (res, path) => {
-        if (path.endsWith('.css')) {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.css')) {
             res.setHeader('Content-Type', 'text/css');
+        } else if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        } else if (filePath.endsWith('.png')) {
+            res.setHeader('Content-Type', 'image/png');
+        } else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+            res.setHeader('Content-Type', 'image/jpeg');
         }
     }
 }));
@@ -207,9 +213,18 @@ app.get('/api/shoe/:id', async (req, res) => {
     }
 });
 
+app.get('/new', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'new.html'));
+});
+
 // Serve favicon
 app.get('/favicon.ico', (req, res) => {
-    res.redirect('/assets/img/misc/airforceshoes.png');
+    res.sendFile(path.join(__dirname, 'public', 'assets', 'img', 'misc', 'airforceshoes.png'));
+});
+
+// 404 handler for undefined routes
+app.use((req, res) => {
+    res.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Start the server

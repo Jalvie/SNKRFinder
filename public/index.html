@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SNKRFinder - Find Your Perfect Sneakers</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -11,8 +11,8 @@
         <span><span class="red">SNKR</span>Finder</span>
 
         <div class="headlinks">
-            <a href="/"><img src="assets/img/icons/home.png" alt="home"></a>
-            <a href="/search"><img src="assets/img/icons/search.png" alt="search"></a>
+            <a href="/" aria-label="Home"><img src="assets/img/icons/home.png" alt="home"></a>
+            <a href="/search" aria-label="Search"><img src="assets/img/icons/search.png" alt="search"></a>
         </div>
     </header>
 
@@ -23,9 +23,10 @@
             <span class="desc">The <span class="red">Sneaker Tools</span> for <span class="red">Sneaker Heads</span></span>
             <div class="modal">
                 <form class="search-form">
-                    <input type="text" placeholder="Search for sneakers...">
+                    <input type="text" placeholder="Search for sneakers..." aria-label="Search for sneakers">
                     <button type="submit">Search</button>
                 </form>
+                <a href="/new" class="new-shoes-btn">View New Releases</a>
             </div>
         </div>
     </main>
