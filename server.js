@@ -143,16 +143,16 @@ app.get('/api/shoe/:id', async (req, res) => {
             return res.status(400).json({ error: 'Shoe ID is required' });
         }
         
+        console.log(`🔍 Looking up shoe: ${requestedId}`);
+        
         // Try to get the shoe from the database first
-        console.log('🔍 Looking up shoe in database...');
         let shoe = await getShoeById(requestedId);
         
         if (!shoe) {
-            // If not in database, try to get from cache
             console.log('🔄 Shoe not found in database, checking cache...');
+            // If not in database, try to get from cache
             const cachedData = cache.get('nike-releases');
             if (cachedData) {
-                // Try to find a shoe where the ID starts with the requested ID
                 const cachedShoe = cachedData.find(s => s.id.startsWith(requestedId));
                 if (cachedShoe) {
                     console.log('📦 Found shoe in cache');
@@ -161,15 +161,15 @@ app.get('/api/shoe/:id', async (req, res) => {
             }
             
             if (!shoe) {
-                // If not in cache, scrape new data
                 console.log('🔍 Shoe not found in cache, scraping new data...');
+                // If not in cache, scrape new data
                 const releases = await scrapeNikeReleases();
                 await saveReleases(releases);
                 cache.set('nike-releases', releases);
                 
-                // Try to find a shoe where the ID starts with the requested ID
                 shoe = releases.find(s => s.id.startsWith(requestedId));
                 if (!shoe) {
+                    console.log(`❌ No shoe found with ID: ${requestedId}`);
                     return res.status(404).json({ 
                         error: 'Shoe not found',
                         message: `No shoe found with ID starting with: ${requestedId}`
@@ -183,7 +183,8 @@ app.get('/api/shoe/:id', async (req, res) => {
             (new Date() - new Date(shoe.last_updated)) > 24 * 60 * 60 * 1000;
 
         if (needsUpdate && shoe.productUrl) {
-            console.log('🔄 Shoe details need updating...');
+            console.log('🔄 Updating shoe details...');
+            console.log('🔗 Using URL:', shoe.productUrl);
             try {
                 const details = await scrapeShoeDetails(shoe.productUrl);
                 await saveShoeDetails(shoe.id, details);
@@ -195,6 +196,7 @@ app.get('/api/shoe/:id', async (req, res) => {
             }
         }
 
+        console.log(`✅ Successfully retrieved shoe: ${requestedId}`);
         res.json(shoe);
     } catch (error) {
         console.error('Error fetching shoe details:', error);

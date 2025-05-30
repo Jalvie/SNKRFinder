@@ -76,77 +76,253 @@ async function scrapeShoeDetails(shoeUrl, maxRetries = 3) {
                 timeout: 30000,
                 visible: true 
             });
+
+            // Wait for images to load
+            console.log('⏳ Waiting for images to load...');
+            await page.waitForSelector('[data-testid="hero-image"], [data-testid="gallery-image"], img[src*="nike"], img[src*="static.nike"]', {
+                timeout: 30000,
+                visible: true
+            });
             
             // Extract detailed product information
             console.log('📦 Extracting product details...');
             const details = await page.evaluate(() => {
-                const name = document.querySelector('[data-testid="product-title"], .product-title, h1')?.textContent?.trim() || '';
-                const price = document.querySelector('[data-testid="product-price"], .product-price, .price')?.textContent?.trim() || '';
+                // Get name with multiple selectors
+                const nameSelectors = [
+                    '[data-testid="product-title"]',
+                    '.product-title',
+                    'h1',
+                    '[data-testid="product-name"]',
+                    '.product-name',
+                    '.product-heading'
+                ];
                 
+                let name = '';
+                for (const selector of nameSelectors) {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        name = element.textContent.trim();
+                        if (name) break;
+                    }
+                }
+
+                // Get price with multiple selectors
+                const priceSelectors = [
+                    '[data-testid="product-price"]',
+                    '.product-price',
+                    '.price',
+                    '[data-testid="price"]',
+                    '.product-price-value'
+                ];
+                
+                let price = '';
+                for (const selector of priceSelectors) {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        price = element.textContent.trim();
+                        if (price) break;
+                    }
+                }
+
                 // Get all product images
                 const imageSelectors = [
+                    '[data-testid="hero-image"]',
                     '[data-testid="hero-image"] img',
+                    '[data-testid="gallery-image"]',
+                    '[data-testid="gallery-image"] img',
                     '.product-image',
                     'img[src*="nike"]',
                     'img[src*="static.nike"]',
                     '.gallery-image',
                     '[data-testid="gallery-image"]',
                     '.carousel-image',
-                    '[data-testid="carousel-image"]'
+                    '[data-testid="carousel-image"]',
+                    '.product-image img',
+                    '.product-gallery img',
+                    '.product-gallery-image img',
+                    '.product-hero-image img',
+                    '.product-detail-image img',
+                    '.product-detail-gallery img',
+                    '.product-detail-hero img',
+                    '.product-detail-carousel img',
+                    '.product-detail-slider img',
+                    '.product-detail-thumbnail img',
+                    '.product-detail-main img',
+                    '.product-detail-zoom img',
+                    'picture source[srcset*="nike"]',
+                    'picture source[srcset*="static.nike"]',
+                    'source[srcset*="nike"]',
+                    'source[srcset*="static.nike"]'
                 ];
                 
                 let images = new Set();
                 for (const selector of imageSelectors) {
                     const elements = document.querySelectorAll(selector);
-                    elements.forEach(img => {
-                        if (img.src && img.src.includes('nike')) {
-                            // Get the highest quality image URL
-                            let highResUrl = img.src;
-                            
-                            // Replace width and height parameters for higher quality
-                            highResUrl = highResUrl.replace(/\/w_\d+,\/h_\d+/, '/w_2000,/h_2000');
-                            highResUrl = highResUrl.replace(/\/c_limit/, '/c_fill');
-                            
-                            // Remove any quality parameters
-                            highResUrl = highResUrl.replace(/\/q_\d+/, '');
-                            
-                            // Ensure we have a valid URL
-                            if (highResUrl.startsWith('//')) {
-                                highResUrl = 'https:' + highResUrl;
-                            }
-                            
-                            // Only add if it's a valid Nike product image URL
-                            if (highResUrl.includes('static.nike.com') && 
-                                highResUrl.endsWith('.png') && 
-                                !highResUrl.includes('misc') &&
-                                !highResUrl.includes('icon') &&
-                                !highResUrl.includes('logo') &&
-                                !highResUrl.includes('3732c58b-d0ad-4c3c-898c-c4b90193312b')) {
-                                images.add(highResUrl);
+                    elements.forEach(element => {
+                        // Handle both img elements and source elements
+                        let imageUrl = '';
+                        if (element.tagName === 'IMG') {
+                            imageUrl = element.src;
+                        } else if (element.tagName === 'SOURCE') {
+                            imageUrl = element.srcset;
+                        } else if (element.hasAttribute('srcset')) {
+                            imageUrl = element.srcset;
+                        } else if (element.hasAttribute('src')) {
+                            imageUrl = element.src;
+                        } else if (element.hasAttribute('data-src')) {
+                            imageUrl = element.getAttribute('data-src');
+                        } else if (element.hasAttribute('data-srcset')) {
+                            imageUrl = element.getAttribute('data-srcset');
+                        } else if (element.hasAttribute('style')) {
+                            // Try to extract URL from background-image in style
+                            const style = element.getAttribute('style');
+                            const match = style.match(/url\(['"]?([^'"()]+)['"]?\)/);
+                            if (match) {
+                                imageUrl = match[1];
                             }
                         }
+
+                        if (imageUrl) {
+                            // Handle srcset format (multiple URLs with sizes)
+                            const urls = imageUrl.split(',').map(url => {
+                                const [urlPart] = url.trim().split(' ');
+                                return urlPart;
+                            });
+
+                            urls.forEach(url => {
+                                if (url && url.includes('nike')) {
+                                    // Get the highest quality image URL
+                                    let highResUrl = url;
+                                    
+                                    // Replace width and height parameters for higher quality
+                                    highResUrl = highResUrl.replace(/\/w_\d+,\/h_\d+/, '/w_2000,/h_2000');
+                                    highResUrl = highResUrl.replace(/\/c_limit/, '/c_fill');
+                                    
+                                    // Remove any quality parameters
+                                    highResUrl = highResUrl.replace(/\/q_\d+/, '');
+                                    
+                                    // Ensure we have a valid URL
+                                    if (highResUrl.startsWith('//')) {
+                                        highResUrl = 'https:' + highResUrl;
+                                    }
+                                    
+                                    // Only add if it's a valid Nike product image URL
+                                    if (highResUrl.includes('static.nike.com') && 
+                                        (highResUrl.endsWith('.png') || highResUrl.endsWith('.jpg')) && 
+                                        !highResUrl.includes('misc') &&
+                                        !highResUrl.includes('icon') &&
+                                        !highResUrl.includes('logo') &&
+                                        !highResUrl.includes('3732c58b-d0ad-4c3c-898c-c4b90193312b')) {
+                                        images.add(highResUrl);
+                                    }
+                                }
+                            });
+                        }
                     });
+                }
+
+                // If no images found, try to find any image URLs in the page
+                if (images.size === 0) {
+                    const allElements = document.querySelectorAll('*');
+                    for (const element of allElements) {
+                        const html = element.outerHTML;
+                        const matches = html.match(/https:\/\/static\.nike\.com\/[^"'\s]+\.(png|jpg)/g) || [];
+                        matches.forEach(url => {
+                            if (!url.includes('misc') && 
+                                !url.includes('icon') && 
+                                !url.includes('logo') && 
+                                !url.includes('3732c58b-d0ad-4c3c-898c-c4b90193312b')) {
+                                images.add(url);
+                            }
+                        });
+                    }
                 }
                 
                 // Convert to array and sort by image number if present
                 const imageUrls = Array.from(images).sort((a, b) => {
-                    const numA = parseInt(a.match(/\/(\d+)\.png/)?.[1] || '0');
-                    const numB = parseInt(b.match(/\/(\d+)\.png/)?.[1] || '0');
+                    const numA = parseInt(a.match(/\/(\d+)\.(png|jpg)/)?.[1] || '0');
+                    const numB = parseInt(b.match(/\/(\d+)\.(png|jpg)/)?.[1] || '0');
                     return numA - numB;
                 });
                 
                 const mainImageUrl = imageUrls[0] || '';
-                
+
                 // Get the product URL
                 const productUrl = window.location.href;
                 
-                const status = document.querySelector('[data-testid="product-badge"], .product-badge, .badge')?.textContent?.trim() || '';
+                // Get status with multiple selectors
+                const statusSelectors = [
+                    '[data-testid="product-badge"]',
+                    '.product-badge',
+                    '.badge',
+                    '[data-testid="status"]',
+                    '.product-status'
+                ];
+                
+                let status = '';
+                for (const selector of statusSelectors) {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        status = element.textContent.trim();
+                        if (status) break;
+                    }
+                }
+                
                 const isLaunched = !status.toLowerCase().includes('coming soon');
                 
-                // Get additional details with fallback selectors
-                const description = document.querySelector('[data-testid="product-description"], .product-description, .description')?.textContent?.trim() || '';
-                const colorway = document.querySelector('[data-testid="colorway-label"], .colorway-label, .colorway')?.textContent?.trim() || '';
-                const style = document.querySelector('[data-testid="style-code"], .style-code, .style')?.textContent?.trim() || '';
+                // Get description with multiple selectors
+                const descriptionSelectors = [
+                    '[data-testid="product-description"]',
+                    '.product-description',
+                    '.description',
+                    '[data-testid="description"]',
+                    '.product-details'
+                ];
+                
+                let description = '';
+                for (const selector of descriptionSelectors) {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        description = element.textContent.trim();
+                        if (description) break;
+                    }
+                }
+                
+                // Get colorway with multiple selectors
+                const colorwaySelectors = [
+                    '[data-testid="colorway-label"]',
+                    '.colorway-label',
+                    '.colorway',
+                    '[data-testid="color"]',
+                    '.product-color'
+                ];
+                
+                let colorway = '';
+                for (const selector of colorwaySelectors) {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        colorway = element.textContent.trim();
+                        if (colorway) break;
+                    }
+                }
+                
+                // Get style with multiple selectors
+                const styleSelectors = [
+                    '[data-testid="style-code"]',
+                    '.style-code',
+                    '.style',
+                    '[data-testid="style"]',
+                    '.product-style'
+                ];
+                
+                let style = '';
+                for (const selector of styleSelectors) {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        style = element.textContent.trim();
+                        if (style) break;
+                    }
+                }
                 
                 // Get available sizes with multiple selectors
                 const sizeSelectors = [
@@ -191,6 +367,16 @@ async function scrapeShoeDetails(shoeUrl, maxRetries = 3) {
                         }
                     }
                 }
+
+                // Log what we found
+                console.log('Found details:', {
+                    name: name || 'Not found',
+                    price: price || 'Not found',
+                    imageUrl: mainImageUrl || 'Not found',
+                    status: status || 'Not found',
+                    imageCount: imageUrls.length,
+                    imageUrls: imageUrls
+                });
                 
                 return {
                     name,
@@ -210,6 +396,12 @@ async function scrapeShoeDetails(shoeUrl, maxRetries = 3) {
             
             // Validate required fields
             if (!details.name || !details.imageUrl) {
+                console.error('Missing required fields:', {
+                    name: details.name || 'Missing',
+                    imageUrl: details.imageUrl || 'Missing',
+                    imageCount: details.imageUrls?.length || 0,
+                    imageUrls: details.imageUrls
+                });
                 throw new Error('Required fields missing from scraped data');
             }
             

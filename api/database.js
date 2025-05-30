@@ -8,64 +8,82 @@ if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
 }
 
+// Read SQL files
+let schemaSql, queriesSql;
+try {
+    schemaSql = fs.readFileSync(path.join(__dirname, 'sql/schema.sql'), 'utf8');
+    queriesSql = fs.readFileSync(path.join(__dirname, 'sql/queries.sql'), 'utf8');
+} catch (error) {
+    console.error('Error reading SQL files:', error);
+    process.exit(1);
+}
+
+// Parse queries into an object
+const queries = {};
+try {
+    console.log('📝 Parsing SQL queries...');
+    const queryBlocks = queriesSql.split(';').filter(block => block.trim());
+    queryBlocks.forEach(block => {
+        const trimmed = block.trim();
+        if (trimmed) {
+            const commentMatch = trimmed.match(/^--\s*(.+)/);
+            if (commentMatch) {
+                const comment = commentMatch[1];
+                const query = trimmed.replace(/^--.+\n/, '').trim();
+                const key = comment.toLowerCase().replace(/\s+/g, '_');
+                queries[key] = query;
+                console.log(`✅ Parsed query: ${key}`);
+            }
+        }
+    });
+    console.log('📦 Successfully parsed all queries');
+} catch (error) {
+    console.error('❌ Error parsing SQL queries:', error);
+    process.exit(1);
+}
+
+// Validate required queries
+const requiredQueries = [
+    'save_releases',
+    'save_shoe_details',
+    'get_latest_releases',
+    'get_shoe_by_id_exact_match',
+    'get_shoe_by_id_partial_match',
+    'get_shoes_needing_update',
+    'cleanup_old_entries'
+];
+
+const missingQueries = requiredQueries.filter(query => !queries[query]);
+if (missingQueries.length > 0) {
+    console.error('❌ Missing required queries:', missingQueries);
+    process.exit(1);
+}
+
 // Create database connection
 const db = new sqlite3.Database(path.join(__dirname, '../data/nike.db'), (err) => {
     if (err) {
         console.error('Error connecting to database:', err);
+        process.exit(1);
     } else {
         console.log('📦 Connected to SQLite database');
-        initDatabase();
+        initDatabase().catch(err => {
+            console.error('Error initializing database:', err);
+            process.exit(1);
+        });
     }
 });
 
 // Initialize database tables
 function initDatabase() {
     return new Promise((resolve, reject) => {
-        // Create releases table
-        db.run(`
-            CREATE TABLE IF NOT EXISTS nike_releases (
-                id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                price TEXT,
-                image_url TEXT,
-                product_url TEXT,
-                status TEXT,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        `, (err) => {
+        db.exec(schemaSql, (err) => {
             if (err) {
-                console.error('Error creating releases table:', err);
+                console.error('Error initializing database:', err);
                 reject(err);
-                return;
+            } else {
+                console.log('✅ Database initialized successfully');
+                resolve();
             }
-
-            // Create shoe details table
-            db.run(`
-                CREATE TABLE IF NOT EXISTS shoe_details (
-                    id TEXT PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    price TEXT,
-                    image_url TEXT,
-                    image_urls TEXT,
-                    product_url TEXT,
-                    status TEXT,
-                    description TEXT,
-                    colorway TEXT,
-                    style TEXT,
-                    sizes TEXT,
-                    is_launched BOOLEAN,
-                    last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (id) REFERENCES nike_releases(id)
-                )
-            `, (err) => {
-                if (err) {
-                    console.error('Error creating shoe details table:', err);
-                    reject(err);
-                } else {
-                    console.log('✅ Database initialized successfully');
-                    resolve();
-                }
-            });
         });
     });
 }
@@ -85,10 +103,7 @@ function saveReleases(releases) {
                 return;
             }
 
-            const stmt = db.prepare(`
-                INSERT OR REPLACE INTO nike_releases (id, name, price, image_url, product_url, status, timestamp)
-                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-            `);
+            const stmt = db.prepare(queries.save_releases);
 
             let hasError = false;
 
@@ -149,12 +164,7 @@ function saveShoeDetails(shoeId, details) {
         const sizes = JSON.stringify(details.sizes || []);
         const imageUrls = JSON.stringify(details.imageUrls || []);
         
-        db.run(`
-            INSERT OR REPLACE INTO shoe_details (
-                id, name, price, image_url, image_urls, product_url, status,
-                description, colorway, style, sizes, is_launched, last_updated
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-        `, [
+        db.run(queries.save_shoe_details, [
             shoeId,
             details.name || '',
             details.price || '',
@@ -181,12 +191,7 @@ function saveShoeDetails(shoeId, details) {
 // Get latest releases from database
 function getLatestReleases(limit = 12) {
     return new Promise((resolve, reject) => {
-        db.all(`
-            SELECT id, name, price, image_url as imageUrl, product_url as productUrl, status, timestamp
-            FROM nike_releases
-            ORDER BY timestamp DESC
-            LIMIT ?
-        `, [limit], (err, rows) => {
+        db.all(queries.get_latest_releases, [limit], (err, rows) => {
             if (err) {
                 console.error('Error getting latest releases:', err);
                 reject(err);
@@ -201,92 +206,95 @@ function getLatestReleases(limit = 12) {
 function getShoeById(id) {
     return new Promise((resolve, reject) => {
         if (!id || typeof id !== 'string') {
+            console.error('Invalid shoe ID:', id);
             reject(new Error('Invalid shoe ID'));
             return;
         }
 
+        console.log('🔍 Querying database for shoe:', id);
+
         // First try exact match
-        db.get(`
-            SELECT 
-                r.id, r.name, r.price, r.image_url as imageUrl, 
-                r.product_url as productUrl, r.status, r.timestamp,
-                d.description, d.colorway, d.style, d.sizes, d.image_urls as imageUrls,
-                d.is_launched as isLaunched, d.last_updated
-            FROM nike_releases r
-            LEFT JOIN shoe_details d ON r.id = d.id
-            WHERE r.id = ?
-        `, [id], (err, row) => {
+        db.get(queries.get_shoe_by_id_exact_match, [id], (err, row) => {
             if (err) {
                 console.error('Error getting shoe by ID:', err);
                 reject(err);
-            } else if (row) {
-                // Parse JSON fields
-                if (row.sizes) {
-                    try {
-                        row.sizes = JSON.parse(row.sizes);
-                    } catch (e) {
-                        console.error('Error parsing sizes JSON:', e);
+                return;
+            }
+
+            if (row) {
+                console.log('✅ Found exact match in database');
+                try {
+                    // Parse JSON fields
+                    if (row.sizes) {
+                        try {
+                            row.sizes = JSON.parse(row.sizes);
+                        } catch (e) {
+                            console.error('Error parsing sizes JSON:', e);
+                            row.sizes = [];
+                        }
+                    } else {
                         row.sizes = [];
                     }
-                } else {
-                    row.sizes = [];
-                }
-                
-                if (row.imageUrls) {
-                    try {
-                        row.imageUrls = JSON.parse(row.imageUrls);
-                    } catch (e) {
-                        console.error('Error parsing imageUrls JSON:', e);
+                    
+                    if (row.imageUrls) {
+                        try {
+                            row.imageUrls = JSON.parse(row.imageUrls);
+                        } catch (e) {
+                            console.error('Error parsing imageUrls JSON:', e);
+                            row.imageUrls = [];
+                        }
+                    } else {
                         row.imageUrls = [];
                     }
-                } else {
-                    row.imageUrls = [];
+                    
+                    resolve(row);
+                } catch (error) {
+                    console.error('Error processing database row:', error);
+                    reject(error);
                 }
-                
-                resolve(row);
             } else {
+                console.log('🔄 No exact match, trying partial match');
                 // If no exact match, try partial match
-                db.get(`
-                    SELECT 
-                        r.id, r.name, r.price, r.image_url as imageUrl, 
-                        r.product_url as productUrl, r.status, r.timestamp,
-                        d.description, d.colorway, d.style, d.sizes, d.image_urls as imageUrls,
-                        d.is_launched as isLaunched, d.last_updated
-                    FROM nike_releases r
-                    LEFT JOIN shoe_details d ON r.id = d.id
-                    WHERE r.id LIKE ?
-                    ORDER BY r.timestamp DESC
-                    LIMIT 1
-                `, [`${id}%`], (err, row) => {
+                db.get(queries.get_shoe_by_id_partial_match, [`${id}%`], (err, row) => {
                     if (err) {
                         console.error('Error getting shoe by partial ID:', err);
                         reject(err);
-                    } else if (row) {
-                        // Parse JSON fields
-                        if (row.sizes) {
-                            try {
-                                row.sizes = JSON.parse(row.sizes);
-                            } catch (e) {
-                                console.error('Error parsing sizes JSON:', e);
+                        return;
+                    }
+
+                    if (row) {
+                        console.log('✅ Found partial match in database');
+                        try {
+                            // Parse JSON fields
+                            if (row.sizes) {
+                                try {
+                                    row.sizes = JSON.parse(row.sizes);
+                                } catch (e) {
+                                    console.error('Error parsing sizes JSON:', e);
+                                    row.sizes = [];
+                                }
+                            } else {
                                 row.sizes = [];
                             }
-                        } else {
-                            row.sizes = [];
-                        }
-                        
-                        if (row.imageUrls) {
-                            try {
-                                row.imageUrls = JSON.parse(row.imageUrls);
-                            } catch (e) {
-                                console.error('Error parsing imageUrls JSON:', e);
+                            
+                            if (row.imageUrls) {
+                                try {
+                                    row.imageUrls = JSON.parse(row.imageUrls);
+                                } catch (e) {
+                                    console.error('Error parsing imageUrls JSON:', e);
+                                    row.imageUrls = [];
+                                }
+                            } else {
                                 row.imageUrls = [];
                             }
-                        } else {
-                            row.imageUrls = [];
+                            
+                            resolve(row);
+                        } catch (error) {
+                            console.error('Error processing database row:', error);
+                            reject(error);
                         }
-                        
-                        resolve(row);
                     } else {
+                        console.log('❌ No matches found in database');
                         resolve(null);
                     }
                 });
@@ -298,14 +306,7 @@ function getShoeById(id) {
 // Get shoes that need updating (older than 24 hours)
 function getShoesNeedingUpdate() {
     return new Promise((resolve, reject) => {
-        db.all(`
-            SELECT r.id, r.product_url as productUrl
-            FROM nike_releases r
-            LEFT JOIN shoe_details d ON r.id = d.id
-            WHERE d.last_updated IS NULL 
-               OR d.last_updated < datetime('now', '-1 day')
-            ORDER BY r.timestamp DESC
-        `, (err, rows) => {
+        db.all(queries.get_shoes_needing_update, (err, rows) => {
             if (err) {
                 console.error('Error getting shoes needing update:', err);
                 reject(err);
@@ -319,14 +320,7 @@ function getShoesNeedingUpdate() {
 // Clean up old entries (keep last 1000 entries)
 function cleanupOldEntries() {
     return new Promise((resolve, reject) => {
-        db.run(`
-            DELETE FROM nike_releases
-            WHERE id NOT IN (
-                SELECT id FROM nike_releases
-                ORDER BY timestamp DESC
-                LIMIT 1000
-            )
-        `, (err) => {
+        db.run(queries.cleanup_old_entries, (err) => {
             if (err) {
                 console.error('Error cleaning up old entries:', err);
                 reject(err);
