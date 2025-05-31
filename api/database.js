@@ -176,7 +176,13 @@ function saveShoeDetails(shoeId, details) {
             details.colorway || '',
             details.style || '',
             sizes,
-            details.isLaunched ? 1 : 0
+            details.isLaunched ? 1 : 0,
+            details.stockxUrl || '',
+            details.stockxPrice || '',
+            details.stockxLastSale || '',
+            details.stockxSales || '',
+            details.stockxName || '',
+            details.stockxSku || ''
         ], (err) => {
             if (err) {
                 console.error('Error saving shoe details:', err);

@@ -1,4 +1,12 @@
 const puppeteer = require('puppeteer');
+const { StockxClient } = require('stockx-scraper');
+
+// Initialize StockX client
+const stockxClient = new StockxClient({
+    currencyCode: 'USD',
+    countryCode: 'US',
+    languageCode: 'EN'
+});
 
 function isValidUrl(url) {
     if (!url) return false;
@@ -7,6 +15,35 @@ function isValidUrl(url) {
         return true;
     } catch (error) {
         return false;
+    }
+}
+
+async function findStockXUrl(shoeName) {
+    try {
+        console.log('🔍 Searching StockX for:', shoeName);
+        const products = await stockxClient.search({
+            query: shoeName
+        });
+
+        if (products && products.length > 0) {
+            // Find the best match
+            const bestMatch = products[0];
+            console.log('✅ Found StockX match:', bestMatch.name);
+            return {
+                stockxUrl: bestMatch.url,
+                stockxPrice: bestMatch.price,
+                stockxLastSale: bestMatch.lastSale,
+                stockxSales: bestMatch.sales,
+                stockxName: bestMatch.name,
+                stockxSku: bestMatch.sku
+            };
+        }
+        
+        console.log('❌ No StockX matches found');
+        return null;
+    } catch (error) {
+        console.error('❌ Error searching StockX:', error);
+        return null;
     }
 }
 
@@ -119,8 +156,16 @@ async function scrapeShoeDetails(shoeUrl, maxRetries = 3) {
                 for (const selector of priceSelectors) {
                     const element = document.querySelector(selector);
                     if (element) {
-                        price = element.textContent.trim();
-                        if (price) break;
+                        const priceText = element.textContent.trim();
+                        // Extract just the price using regex
+                        const priceMatch = priceText.match(/\$?\d+(\.\d{2})?/);
+                        if (priceMatch) {
+                            price = priceMatch[0];
+                            if (!price.startsWith('$')) {
+                                price = '$' + price;
+                            }
+                            break;
+                        }
                     }
                 }
 
@@ -394,6 +439,16 @@ async function scrapeShoeDetails(shoeUrl, maxRetries = 3) {
                 };
             });
             
+            // Find StockX URL for the shoe
+            if (details.name) {
+                console.log('🔍 Looking up StockX URL...');
+                const stockxInfo = await findStockXUrl(details.name);
+                if (stockxInfo) {
+                    // Merge StockX info with existing details
+                    Object.assign(details, stockxInfo);
+                }
+            }
+            
             // Validate required fields
             if (!details.name || !details.imageUrl) {
                 console.error('Missing required fields:', {
@@ -411,6 +466,9 @@ async function scrapeShoeDetails(shoeUrl, maxRetries = 3) {
             } else {
                 console.log('⚠️ No sizes found');
             }
+            
+            // Add timestamp
+            details.last_updated = new Date().toISOString();
             
             return details;
             

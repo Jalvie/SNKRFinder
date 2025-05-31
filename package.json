@@ -16,6 +16,7 @@
     "node-cache": "^5.1.2",
     "puppeteer": "^24.9.0",
     "snkrfinder": "file:",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "stockx-scraper": "^2.2.3"
   }
 }
