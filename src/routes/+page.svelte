@@ -1,22 +1,9 @@
 <script>
 	import AirForceShoe from '$lib/assets/img/misc/airforceshoe.png';
 	import SearchBar from '$lib/components/SearchBar.svelte';
+	import AJ1 from '$lib/assets/img/misc/aj1.png'
 
-	let imgsrc = null;
-	let rndimg = Math.floor(Math.random() * 9);
-
-	async function fetchHeroImage() {
-		try {
-			const res = await fetch('/api/heroimage');
-			const data = await res.json();
-			imgsrc = data[rndimg].thumbnail;
-		} catch (e) {
-			console.log("Couldn't Fetch Hero Image, defaulting to airforceshoe.png");
-			imgsrc = AirForceShoe;
-		}
-	}
-
-	fetchHeroImage();
+	let imgsrc = AJ1
 </script>
 
 <main>
@@ -47,10 +34,7 @@
 		max-width: 100%;
 		object-fit: contain;
 		transform: rotate(17deg);
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-		filter: brightness(1.2) contrast(1.2) blur(7px);
-		mix-blend-mode: multiply;
-		background-color: #f8f8f8;
+		filter: blur(6px);
 		position: relative;
 		z-index: 1;
 	}

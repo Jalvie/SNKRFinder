@@ -3,9 +3,9 @@ import SneaksAPI from 'sneaks-api';
 
 const sneaks = new SneaksAPI();
 
-function getProducts(sneaker, limit) {
+function getProducts(limit) {
 	return new Promise((resolve, reject) => {
-		sneaks.getProducts(sneaker, limit, (err, products) => {
+		sneaks.getMostPopular(limit, (err, products) => {
 			if (err) reject(err);
 			else resolve(products);
 		});
@@ -14,20 +14,15 @@ function getProducts(sneaker, limit) {
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
-	const sneaker = ' Air Jordan 1 High “Chicago”';
-	const limitParam = '10';
+	const limitParam = url.searchParams.get('limit') || '10';
 	const limit = parseInt(limitParam);
 
-	if (!sneaker) {
-		return json({ error: 'Missing "sneaker" query parameter' }, { status: 400 });
-	}
-
-	if (limit > 12) {
-		return json({ error: 'Limit must be less than or equal to 10' }, { status: 400 });
+	if (limit > 20) {
+		return json({ error: 'Limit must be less than or equal to 20' }, { status: 400 });
 	}
 
 	try {
-		const products = await getProducts(sneaker, limit);
+		const products = await getProducts(limit);
 		return json(products);
 	} catch (err) {
 		console.error(err);

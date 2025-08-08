@@ -2,8 +2,9 @@
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
+	import Loading from '$lib/components/Loading.svelte';
 
-	let name = get(page).params.name;
+	let id = get(page).params._id;
 	let shoeInfo = null;
 	let loading = true;
 
@@ -13,7 +14,7 @@
 
 	async function fetchShoeDetails() {
 		try {
-			const res = await fetch(`/api/details?name=${name}`);
+			const res = await fetch(`/api/sneaker?sneaker=${id}`);
 			const data = await res.json();
 			shoeInfo = data;
 		} catch (e) {
@@ -30,7 +31,9 @@
 
 <main>
 	{#if loading}
-		<p class="loading">Loading sneaker details...</p>
+		<div class="loading">
+			<Loading text="Loading Sneaker Details" />
+		</div>
 	{:else if shoeInfo}
 		<div class="sneakerCard">
 			<img src={shoeInfo.thumbnail} alt={shoeInfo.shoeName} />

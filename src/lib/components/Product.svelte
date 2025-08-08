@@ -4,7 +4,6 @@
 	export let item = {};
 	let lowestPrice = 1000000;
 	let priceSite = '';
-	export let hint = '';
 
 	for (const [site, price] of Object.entries(item.lowestResellPrice)) {
 		if (price < lowestPrice) {
@@ -13,8 +12,9 @@
 		}
 	}
 
+	let id = btoa(item.styleID)
 	function handleClick() {
-		goto(`/sneaker/${item.shoeName}`);
+		goto(`/sneaker/${id}`);
 	}
 </script>
 

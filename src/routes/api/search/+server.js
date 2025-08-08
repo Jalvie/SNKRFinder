@@ -15,15 +15,15 @@ function getProducts(sneaker, limit) {
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
 	const sneaker = url.searchParams.get('sneaker');
-	const limitParam = url.searchParams.get('limit') || '5';
+	const limitParam = url.searchParams.get('limit') || '10';
 	const limit = parseInt(limitParam);
 
 	if (!sneaker) {
 		return json({ error: 'Missing "sneaker" query parameter' }, { status: 400 });
 	}
 
-	if (limit > 12) {
-		return json({ error: 'Limit must be less than or equal to 10' }, { status: 400 });
+	if (limit > 20) {
+		return json({ error: 'Limit must be less than or equal to 20' }, { status: 400 });
 	}
 
 	try {
