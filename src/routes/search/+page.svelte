@@ -82,7 +82,7 @@
 	.search {
 		display: flex;
 		justify-content: center;
-		margin-top: 4rem;
+		margin-top: 6rem;
 	}
 
 	h2 {

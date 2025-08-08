@@ -14,7 +14,7 @@ function getProducts(sneaker, limit) {
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
-	const sneaker = 'Jordan 1 High Chicago';
+	const sneaker = ' Air Jordan 1 High “Chicago”';
 	const limitParam = '10';
 	const limit = parseInt(limitParam);
 

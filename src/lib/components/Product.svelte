@@ -14,7 +14,7 @@
 	}
 
 	function handleClick() {
-		goto(`/sneaker/${item._id}?q=${hint}`);
+		goto(`/sneaker/${item.shoeName}`);
 	}
 </script>
 
@@ -31,7 +31,7 @@
 		display: flex;
 		flex-direction: column; /* stack image + text vertically */
 		align-items: center;
-		width: 200px; /* controls how many per row */
+		width: 400px; /* controls how many per row */
 		background: white;
 		padding: 1rem;
 		border-radius: 10px;

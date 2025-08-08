@@ -3,8 +3,7 @@
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
 
-	let id = get(page).params._id;
-    let hint = get(page).url.searchParams.get('q')
+	let name = get(page).params.name;
 	let shoeInfo = null;
 	let loading = true;
 
@@ -14,7 +13,7 @@
 
 	async function fetchShoeDetails() {
 		try {
-			const res = await fetch(`/api/details?id=${id}&q=${hint}`);
+			const res = await fetch(`/api/details?name=${name}`);
 			const data = await res.json();
 			shoeInfo = data;
 		} catch (e) {
@@ -38,7 +37,7 @@
 
 			<div class="text">
 				<h2>{shoeInfo.shoeName}</h2>
-				<p class="desc">{shoeInfo.description}</p>
+				<p class="desc">{@html shoeInfo.description}</p>
 				<p><strong>Style ID:</strong> {shoeInfo.styleID}</p>
 				<p><strong>Colorway:</strong> {shoeInfo.colorway}</p>
 				<p><strong>Release Date:</strong> {shoeInfo.releaseDate}</p>
@@ -61,6 +60,7 @@
 
 <style>
 	main {
+		margin-top: 6rem;
 		display: flex;
 		justify-content: center;
 		align-items: center;
