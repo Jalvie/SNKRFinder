@@ -1,10 +1,27 @@
 <script>
+	import Filler from '$lib/components/Filler.svelte';
 	import NavBar from '$lib/components/NavBar.svelte';
 </script>
+
+<svelte:head>
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-W5DRVX27EE"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag('js', new Date());
+
+		gtag('config', 'G-W5DRVX27EE');
+	</script>
+</svelte:head>
 
 <NavBar />
 
 <slot />
+
+<Filler />
 
 <style>
 	:global(*) {

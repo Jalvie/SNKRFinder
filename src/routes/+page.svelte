@@ -1,9 +1,9 @@
 <script>
 	import AirForceShoe from '$lib/assets/img/misc/airforceshoe.png';
 	import SearchBar from '$lib/components/SearchBar.svelte';
-	import AJ1 from '$lib/assets/img/misc/aj1.png'
+	import AJ1 from '$lib/assets/img/misc/aj1.png';
 
-	let imgsrc = AJ1
+	let imgsrc = AJ1;
 </script>
 
 <main>
@@ -11,6 +11,7 @@
 		<img src={imgsrc} alt="Hero Shoe" />
 		<div class="overlay">
 			<div class="search">
+				<h1>Find Good Deals On <span class="red">SNKRS</span></h1>
 				<SearchBar />
 			</div>
 		</div>
@@ -46,6 +47,8 @@
 		width: 100%;
 		height: 100%;
 		display: flex;
+		flex-direction: column;
+		gap: 2rem;
 		justify-content: center;
 		align-items: center;
 		z-index: 2;
@@ -63,6 +66,9 @@
 		max-width: 600px;
 		transition: all 0.3s ease;
 		border: 1px solid #ccc;
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
 	}
 
 	@media (max-width: 500px) {
@@ -79,5 +85,9 @@
 		border: none;
 		border-radius: 8px;
 		box-shadow: 0 0 0 1px #ccc;
+	}
+
+	.red {
+		color: red;
 	}
 </style>

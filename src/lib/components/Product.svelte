@@ -31,7 +31,8 @@
 		display: flex;
 		flex-direction: column; /* stack image + text vertically */
 		align-items: center;
-		width: 400px; /* controls how many per row */
+		width: 336px; /* controls how many per row */
+		height: 280px;
 		background: white;
 		padding: 1rem;
 		border-radius: 10px;
@@ -45,8 +46,8 @@
 	}
 
 	.product img {
-		width: 100%;
-		height: auto;
+		width: auto;
+		height: 200px;
 		border-radius: 8px;
 		object-fit: cover;
 	}
