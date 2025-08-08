@@ -3,9 +3,11 @@
 	import { onDestroy } from 'svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import Product from '$lib/components/Product.svelte';
+	import Loading from '$lib/components/Loading.svelte';
 
 	let results = null;
 	let query = null;
+	let loading = true;
 
 	// Subscribe to page store so we can update on navigation
 	const unsubscribe = page.subscribe(($page) => {
@@ -21,11 +23,13 @@
 			return;
 		}
 		try {
-			const res = await fetch(`/api/search?sneaker=${encodeURIComponent(query)}&limit=12`);
+			const res = await fetch(`/api/search?sneaker=${encodeURIComponent(query)}&limit=20`);
 			results = await res.json();
 		} catch (e) {
 			console.error(e.message);
 			results = { error: 'Failed to load search results' };
+		} finally {
+			loading = false;
 		}
 	}
 
@@ -62,6 +66,10 @@
 		<div class="search">
 			<SearchBar />
 		</div>
+	{:else if loading}
+		<div class="loading">
+			<Loading />
+		</div>
 	{:else if results?.error}
 		<p class="error">{results.error}</p>
 	{:else if results}
@@ -71,7 +79,7 @@
 				<p>No products found.</p>
 			{:else}
 				{#each results as item}
-					<Product {item} hint={query} />
+					<Product {item} />
 				{/each}
 			{/if}
 		</div>
@@ -82,7 +90,7 @@
 	.search {
 		display: flex;
 		justify-content: center;
-		margin-top: 4rem;
+		margin-top: 6rem;
 	}
 
 	h2 {
@@ -104,6 +112,13 @@
 
 	.error {
 		color: red;
+		text-align: center;
+		margin-top: 2rem;
+	}
+
+	.loading {
+		font-size: 1.2rem;
+		color: #666;
 		text-align: center;
 		margin-top: 2rem;
 	}

@@ -14,7 +14,8 @@ function getProducts(sneaker) {
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
-	const sneaker = url.searchParams.get('sneaker');
+	let sneaker = url.searchParams.get('sneaker');
+	sneaker = atob(sneaker)
 
 	if (!sneaker) {
 		return json({ error: 'You need a sneaker to search with' }, { status: 400 });

@@ -2,9 +2,9 @@
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
+	import Loading from '$lib/components/Loading.svelte';
 
 	let id = get(page).params._id;
-    let hint = get(page).url.searchParams.get('q')
 	let shoeInfo = null;
 	let loading = true;
 
@@ -14,7 +14,7 @@
 
 	async function fetchShoeDetails() {
 		try {
-			const res = await fetch(`/api/details?id=${id}&q=${hint}`);
+			const res = await fetch(`/api/sneaker?sneaker=${id}`);
 			const data = await res.json();
 			shoeInfo = data;
 		} catch (e) {
@@ -31,14 +31,16 @@
 
 <main>
 	{#if loading}
-		<p class="loading">Loading sneaker details...</p>
+		<div class="loading">
+			<Loading text="Loading Sneaker Details" />
+		</div>
 	{:else if shoeInfo}
 		<div class="sneakerCard">
 			<img src={shoeInfo.thumbnail} alt={shoeInfo.shoeName} />
 
 			<div class="text">
 				<h2>{shoeInfo.shoeName}</h2>
-				<p class="desc">{shoeInfo.description}</p>
+				<p class="desc">{@html shoeInfo.description}</p>
 				<p><strong>Style ID:</strong> {shoeInfo.styleID}</p>
 				<p><strong>Colorway:</strong> {shoeInfo.colorway}</p>
 				<p><strong>Release Date:</strong> {shoeInfo.releaseDate}</p>
@@ -61,6 +63,7 @@
 
 <style>
 	main {
+		margin-top: 6rem;
 		display: flex;
 		justify-content: center;
 		align-items: center;
