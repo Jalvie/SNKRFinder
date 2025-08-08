@@ -1,4 +1,5 @@
 <script>
+	import Filler from '$lib/components/Filler.svelte';
 	import NavBar from '$lib/components/NavBar.svelte';
 </script>
 
@@ -19,6 +20,8 @@
 <NavBar />
 
 <slot />
+
+<Filler />
 
 <style>
 	:global(*) {

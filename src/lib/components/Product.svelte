@@ -46,8 +46,8 @@
 	}
 
 	.product img {
-		width: 100%;
-		height: auto;
+		width: auto;
+		height: 200px;
 		border-radius: 8px;
 		object-fit: cover;
 	}
