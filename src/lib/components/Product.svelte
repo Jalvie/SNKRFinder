@@ -31,7 +31,8 @@
 		display: flex;
 		flex-direction: column; /* stack image + text vertically */
 		align-items: center;
-		width: 400px; /* controls how many per row */
+		width: 336px; /* controls how many per row */
+		height: 280px;
 		background: white;
 		padding: 1rem;
 		border-radius: 10px;

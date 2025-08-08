@@ -1,6 +1,7 @@
 <script>
 	import HomeImg from '$lib/assets/img/icons/home.png';
 	import SearchImg from '$lib/assets/img/icons/search.png';
+	import StarReg from '$lib/assets/img/icons/star-regular.svg'
 </script>
 
 <nav>
@@ -9,6 +10,9 @@
 	<div class="headlinks">
 		<a href="/" aria-label="Home">
 			<img src={HomeImg} alt="home" />
+		</a>
+		<a href="/popular">
+			<img src={StarReg} alt="">
 		</a>
 		<a href="/search" aria-label="Search">
 			<img src={SearchImg} alt="search" />
