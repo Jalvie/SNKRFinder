@@ -4,7 +4,7 @@
 </script>
 
 <nav>
-	<span class="logo"><span class="red">SNKR</span>Finder</span>
+	<a href="/"><span class="logo"><span class="red">SNKR</span>Finder</span></a>
 
 	<div class="headlinks">
 		<a href="/" aria-label="Home">
@@ -69,5 +69,9 @@
 
 	.headlinks a:hover img {
 		transform: scale(1.2);
+	}
+
+	a {
+		text-decoration: none;
 	}
 </style>

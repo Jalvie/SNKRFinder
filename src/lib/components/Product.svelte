@@ -4,7 +4,6 @@
 	export let item = {};
 	let lowestPrice = 1000000;
 	let priceSite = '';
-	export let hint = '';
 
 	for (const [site, price] of Object.entries(item.lowestResellPrice)) {
 		if (price < lowestPrice) {
@@ -13,8 +12,9 @@
 		}
 	}
 
+	let id = btoa(item.styleID)
 	function handleClick() {
-		goto(`/sneaker/${item._id}?q=${hint}`);
+		goto(`/sneaker/${id}`);
 	}
 </script>
 
@@ -31,7 +31,7 @@
 		display: flex;
 		flex-direction: column; /* stack image + text vertically */
 		align-items: center;
-		width: 200px; /* controls how many per row */
+		width: 400px; /* controls how many per row */
 		background: white;
 		padding: 1rem;
 		border-radius: 10px;
