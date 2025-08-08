@@ -1,4 +1,8 @@
 <script>
+	import { onMount } from "svelte";
+	import Loading from "$lib/components/Loading.svelte";
+	import Product from "$lib/components/Product.svelte";
+
 	let results = [];
 	let loading = true;
 	let error = null;
@@ -6,9 +10,8 @@
 	async function fetchSneakers() {
 		try {
 			const res = await fetch('/api/popular?limit=20');
-			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 			const data = await res.json();
-			results = data;
+			results = data.filter(item => !item.shoeName.includes('Sunglasses') || !item.shoeName.includes('Jersey') || !item.shoeName.includes('Card'));
 		} catch (e) {
 			error = e.message;
 		} finally {
@@ -16,7 +19,7 @@
 		}
 	}
 
-	fetchSneakers();
+	onMount(fetchSneakers)
 </script>
 
 <main>
