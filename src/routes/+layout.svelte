@@ -100,20 +100,6 @@
 		setTimeout(initAnalytics, 3000);
 	</script>
 	
-	<!-- Service Worker Registration -->
-	<script>
-		if ('serviceWorker' in navigator) {
-			window.addEventListener('load', () => {
-				navigator.serviceWorker.register('/sw.js')
-					.then(registration => console.log('SW registered'))
-					.catch(error => console.log('SW registration failed'));
-			});
-		}
-	</script>
-	
-	<!-- Prefetch DNS for likely next navigations -->
-	<link rel="dns-prefetch" href="//api.example.com" />
-	
 	<!-- Performance monitoring -->
 	<script>
 		// Basic performance monitoring

@@ -44,7 +44,7 @@
 
 <style>
     .filler {
-        margin-top: 100vh;
+        margin-top: 2rem;
     }
 	.hero {
 		display: flex;
