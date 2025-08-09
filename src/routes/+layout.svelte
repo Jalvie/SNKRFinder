@@ -1,6 +1,7 @@
 <script>
 	import Filler from '$lib/components/Filler.svelte';
 	import NavBar from '$lib/components/NavBar.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 </script>
 
 <svelte:head>
@@ -136,6 +137,8 @@
 <slot />
 
 <Filler />
+
+<Footer />
 
 <style>
 	/* Non-critical styles moved here */
