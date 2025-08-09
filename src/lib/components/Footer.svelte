@@ -2,7 +2,7 @@
 	<div class="footer-content">
 		<div class="container portfolio-container">
 			<h3>Portfolio</h3>
-			<a href="https://yourportfolio.com" target="_blank" rel="noopener noreferrer" class="portfolio-link">
+			<a href="https://developers-fun.com" target="_blank" rel="noopener noreferrer" class="portfolio-link">
 				View My Portfolio
 			</a>
 		</div>
@@ -10,8 +10,8 @@
 		<div class="container legal-container">
 			<h3>Legal</h3>
 			<div class="legal-links">
-				<a href="/privacy-policy" class="legal-link">Privacy Policy</a>
-				<a href="/cookie-policy" class="legal-link">Cookie Policy</a>
+				<a href="/privacy" class="legal-link">Privacy Policy</a>
+				<a href="/cookies" class="legal-link">Cookie Policy</a>
 			</div>
 		</div>
 	</div>
