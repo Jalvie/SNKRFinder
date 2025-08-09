@@ -1,3 +1,61 @@
+<svelte:head>
+	{#if shoeInfo}
+		<title>{shoeInfo.shoeName} - SNKRFinder | Sneaker Details & Deals</title>
+		<meta name="description" content="Find {shoeInfo.shoeName} on SNKRFinder. Style ID: {shoeInfo.styleID}, Colorway: {shoeInfo.colorway}. Discover the best deals and resale prices for this sneaker." />
+		<meta name="keywords" content="{shoeInfo.shoeName}, {shoeInfo.colorway}, {shoeInfo.styleID}, sneaker deals, resale sneakers, {shoeInfo.shoeName.toLowerCase()} deals" />
+		<meta name="author" content="SNKRFinder" />
+		<meta name="robots" content="index, follow" />
+		<meta name="language" content="English" />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="product" />
+		<meta property="og:url" content="https://snkrfinder.net/sneaker/{id}" />
+		<meta property="og:title" content="{shoeInfo.shoeName} - SNKRFinder" />
+		<meta property="og:description" content="Find {shoeInfo.shoeName} on SNKRFinder. Style ID: {shoeInfo.styleID}, Colorway: {shoeInfo.colorway}." />
+		<meta property="og:image" content={shoeInfo.thumbnail} />
+		<meta property="og:site_name" content="SNKRFinder" />
+		<meta property="og:locale" content="en_US" />
+		
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content="https://snkrfinder.net/sneaker/{id}" />
+		<meta property="twitter:title" content="{shoeInfo.shoeName} - SNKRFinder" />
+		<meta property="twitter:description" content="Find {shoeInfo.shoeName} on SNKRFinder. Style ID: {shoeInfo.styleID}, Colorway: {shoeInfo.colorway}." />
+		<meta property="twitter:image" content={shoeInfo.thumbnail} />
+		
+		<!-- Additional SEO -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="theme-color" content="#ff0000" />
+		<meta name="msapplication-TileColor" content="#ff0000" />
+		<link rel="canonical" href="https://snkrfinder.net/sneaker/{id}" />
+		
+		<!-- Structured Data -->
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "Product",
+			"name": "{shoeInfo.shoeName}",
+			"description": "Find {shoeInfo.shoeName} on SNKRFinder. Style ID: {shoeInfo.styleID}, Colorway: {shoeInfo.colorway}.",
+			"image": "{shoeInfo.thumbnail}",
+			"url": "https://snkrfinder.net/sneaker/{id}",
+			"brand": {
+				"@type": "Brand",
+				"name": "Nike"
+			},
+			"model": "{shoeInfo.shoeName}",
+			"sku": "{shoeInfo.styleID}",
+			"color": "{shoeInfo.colorway}",
+			"releaseDate": "{shoeInfo.releaseDate}"
+		}
+		</script>
+	{:else}
+		<title>Loading Sneaker - SNKRFinder</title>
+		<meta name="description" content="Loading sneaker details on SNKRFinder. Find the best deals on sneakers." />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="theme-color" content="#ff0000" />
+	{/if}
+</svelte:head>
+
 <script>
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
