@@ -1,7 +1,7 @@
 <script>
-	import HeroImage from '$lib/assets/img/misc/aj1.png';
-	import aj4 from '$lib/assets/img/misc/aj4.png';
-	import aj5 from '$lib/assets/img/misc/aj5.png';
+	import HeroImage from '$lib/assets/img/misc/aj1.webp';
+	import aj4 from '$lib/assets/img/misc/aj4.webp';
+	import aj5 from '$lib/assets/img/misc/aj5.webp';
 </script>
 
 <div class="filler">
@@ -44,7 +44,7 @@
 
 <style>
     .filler {
-        margin-top: 100vh;
+        margin-top: 2rem;
     }
 	.hero {
 		display: flex;
