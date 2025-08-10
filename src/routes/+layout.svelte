@@ -54,8 +54,7 @@
 	
 	<!-- Performance Optimizations -->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="format-detection" content="telephone=no" />
-	<link rel="preload" as="image" href="/lib/assets/img/misc/heroshoes.png" />
+	<meta name="format-detection" content="telephone=no" /> 
 	
 	<!-- Optimized Google Analytics (Delayed Load) -->
 	<script>
