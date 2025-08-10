@@ -2,36 +2,36 @@
 	<title>Privacy Policy - SNKRFinder | Data Protection & Privacy</title>
 	<meta name="description" content="Read SNKRFinder's Privacy Policy to understand how we collect, use, and protect your personal information when using our sneaker search and deals platform." />
 	<meta name="keywords" content="privacy policy, data protection, personal information, SNKRFinder privacy, sneaker website privacy, user data protection" />
-	<meta name="author" content="SNKRFinder" />
-	<meta name="robots" content="index, follow" />
-	<meta name="language" content="English" />
-	
-	<!-- Open Graph / Facebook -->
-	<meta property="og:type" content="website" />
+		<meta name="author" content="SNKRFinder" />
+		<meta name="robots" content="index, follow" />
+		<meta name="language" content="English" />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://snkrfinder.net/privacy" />
 	<meta property="og:title" content="Privacy Policy - SNKRFinder" />
 	<meta property="og:description" content="Read SNKRFinder's Privacy Policy to understand how we collect, use, and protect your personal information." />
-	<meta property="og:image" content="/static/assets/favicon/web-app-manifest-512x512.png" />
-	<meta property="og:site_name" content="SNKRFinder" />
-	<meta property="og:locale" content="en_US" />
-	
-	<!-- Twitter -->
-	<meta property="twitter:card" content="summary_large_image" />
+		<meta property="og:image" content="/static/assets/favicon/web-app-manifest-512x512.png" />
+		<meta property="og:site_name" content="SNKRFinder" />
+		<meta property="og:locale" content="en_US" />
+		
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
 	<meta property="twitter:url" content="https://snkrfinder.net/privacy" />
 	<meta property="twitter:title" content="Privacy Policy - SNKRFinder" />
 	<meta property="twitter:description" content="Read SNKRFinder's Privacy Policy to understand how we collect, use, and protect your personal information." />
-	<meta property="twitter:image" content="/static/assets/favicon/web-app-manifest-512x512.png" />
-	
-	<!-- Additional SEO -->
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="theme-color" content="#ff0000" />
-	<meta name="msapplication-TileColor" content="#ff0000" />
+		<meta property="twitter:image" content="/static/assets/favicon/web-app-manifest-512x512.png" />
+		
+		<!-- Additional SEO -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="theme-color" content="#ff0000" />
+		<meta name="msapplication-TileColor" content="#ff0000" />
 	<link rel="canonical" href="https://snkrfinder.net/privacy" />
-	
-	<!-- Structured Data -->
-	<script type="application/ld+json">
-	{
-		"@context": "https://schema.org",
+		
+		<!-- Structured Data -->
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
 		"@type": "WebPage",
 		"name": "Privacy Policy",
 		"description": "SNKRFinder's Privacy Policy explaining data collection and protection practices",
@@ -45,9 +45,9 @@
 			"@type": "Thing",
 			"name": "Privacy and Data Protection",
 			"description": "Information about how SNKRFinder handles user data and privacy"
+			}
 		}
-	}
-	</script>
+		</script>
 </svelte:head>
 
 <main>
@@ -224,9 +224,9 @@
 			<p>If you have any questions about this Privacy Policy, You can contact us:</p>
 			<div class="contact-info">
 				<p><strong>By email:</strong> developersfuncontact@gmail.com</p>
-			</div>
+		</div>
 		</section>
-	</div>
+		</div>
 </main>
 
 <style>
@@ -335,7 +335,7 @@
 		}
 
 		.policy-section h3 {
-			font-size: 1.2rem;
+		font-size: 1.2rem;
 		}
 
 		.policy-section h4 {

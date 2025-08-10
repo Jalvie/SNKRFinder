@@ -45,12 +45,11 @@
 	}
 	</script>
 </svelte:head>
-
 <script>
 	import AirForceShoe from '$lib/assets/img/misc/airforceshoe.png';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import AJ1 from '$lib/assets/img/misc/aj1.webp';
-
+	import Filler from '$lib/components/Filler.svelte';
 	let imgsrc = AJ1;
 </script>
 
@@ -64,6 +63,9 @@
 			</div>
 		</div>
 	</div>
+
+	
+	<Filler />
 </main>
 
 <style>
