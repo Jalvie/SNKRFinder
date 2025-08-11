@@ -114,6 +114,7 @@
 			}
 		});
 	</script>
+	<meta name="google-adsense-account" content="ca-pub-6625598816974221">
 </svelte:head>
 
 <NavBar />

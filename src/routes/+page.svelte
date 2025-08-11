@@ -55,7 +55,7 @@
 
 <main>
 	<div class="hero">
-		<img src={imgsrc} alt="Hero Shoe" />
+		<img src={imgsrc} alt="Hero Shoe" fetchpriority=high />
 		<div class="overlay">
 			<div class="search">
 				<h1>Find Good Deals On <span class="red">SNKRS</span></h1>

@@ -127,6 +127,26 @@
 				</div>
 			{/if}
 		</div>
+
+		<!-- Additional Information Section -->
+		<div class="additional-info">
+			<div class="info-grid">
+				<div class="info-card">
+					<h3>About This Release</h3>
+					<p>This sneaker was released on {shoeInfo.releaseDate}. The {shoeInfo.colorway} colorway features a unique design that stands out in any collection.</p>
+				</div>
+				
+				<div class="info-card">
+					<h3>Style Details</h3>
+					<p>Style ID {shoeInfo.styleID} identifies this specific model and color combination. Each style ID corresponds to a unique product variation.</p>
+				</div>
+				
+				<div class="info-card">
+					<h3>Market Information</h3>
+					<p>Current resale prices reflect market demand and availability. Prices can vary based on size, condition, and market trends.</p>
+				</div>
+			</div>
+		</div>
 	{:else}
 		<p class="error">Sneaker not found.</p>
 	{/if}
@@ -256,5 +276,45 @@
 		color: #666;
 		text-align: center;
 		margin-top: 2rem;
+	}
+
+	.additional-info {
+		margin-top: 3rem;
+		width: 100%;
+		max-width: 800px;
+	}
+
+	.info-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1.5rem;
+		margin-top: 1rem;
+	}
+
+	.info-card {
+		background-color: #f8f9fa;
+		border-radius: 12px;
+		padding: 1.5rem;
+		border-left: 4px solid #ff0000;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	.info-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
+
+	.info-card h3 {
+		color: #333;
+		margin-bottom: 0.75rem;
+		font-size: 1.1rem;
+		font-weight: 600;
+	}
+
+	.info-card p {
+		color: #666;
+		line-height: 1.5;
+		margin: 0;
+		font-size: 0.95rem;
 	}
 </style>
