@@ -17,7 +17,7 @@ export async function GET({ url }) {
 	const limitParam = url.searchParams.get('limit') || '10';
 	const limit = parseInt(limitParam);
 
-	if (limit > 20) {
+	if (limit > 40) {
 		return json({ error: 'Limit must be less than or equal to 20' }, { status: 400 });
 	}
 

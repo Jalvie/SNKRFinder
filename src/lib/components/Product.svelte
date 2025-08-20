@@ -31,14 +31,15 @@
 		display: flex;
 		flex-direction: column; /* stack image + text vertically */
 		align-items: center;
-		width: 336px; /* controls how many per row */
-		height: 280px;
+		width: 300px; /* controls how many per row */
+		height: 250px;
 		background: white;
 		padding: 1rem;
 		border-radius: 10px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 		text-align: center;
 		transition: transform 0.2s ease;
+		cursor: pointer;
 	}
 
 	.product:hover {
@@ -47,7 +48,7 @@
 
 	.product img {
 		width: auto;
-		height: 200px;
+		height: 150px;
 		border-radius: 8px;
 		object-fit: cover;
 	}

@@ -22,7 +22,7 @@ export async function GET({ url }) {
 		return json({ error: 'Missing "sneaker" query parameter' }, { status: 400 });
 	}
 
-	if (limit > 20) {
+	if (limit > 30) {
 		return json({ error: 'Limit must be less than or equal to 20' }, { status: 400 });
 	}
 
