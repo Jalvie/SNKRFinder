@@ -6,6 +6,7 @@
 		<meta name="author" content="SNKRFinder" />
 		<meta name="robots" content="index, follow" />
 		<meta name="language" content="English" />
+		<link rel="icon" type="image/png" href={shoeInfo.thumbnail || '/assets/favicon/favicon-96x96.png'} />
 		
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="product" />
@@ -61,6 +62,7 @@
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import Loading from '$lib/components/Loading.svelte';
+	import SneakerPageAd from '$lib/components/SneakerPageAd.svelte';
 
 	let id = get(page).params._id;
 	let shoeInfo = null;
@@ -114,6 +116,9 @@
 				</ul>
 			{/if}
 		</div>
+		<div class="ad2">
+			<SneakerPageAd />
+		</div>
 	{:else}
 		<p class="error">Sneaker not found.</p>
 	{/if}
@@ -124,9 +129,21 @@
 		margin-top: 6rem;
 		display: flex;
 		justify-content: center;
+		position: relative;
 		align-items: center;
 		padding: 2rem;
 		flex-direction: column;
+	}
+
+	.ad2 {
+		display: flex;
+		height: fit-content;
+		width: fit-content;
+		justify-self: flex-end;
+		position: absolute;
+		top: 50%;
+		right: 12px;
+		transform: translate(-50%, -50%);
 	}
 
 	.sneakerCard {

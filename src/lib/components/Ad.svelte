@@ -1,4 +1,16 @@
-<script>
-    export let height = '336px' || '600px'
-    export let width = '280px' || '160px'
-</script>
+<div class="ad-space">
+	<slot />
+</div>
+
+<style>
+	.ad-space {
+		background-color: #fff;
+		z-index: 100000;
+		height: fit-content;
+		width: fit-content;
+	}
+
+	.ad-space ins {
+		z-index: 100001;
+	}
+</style>
