@@ -11,7 +11,6 @@
 			<h3>Legal</h3>
 			<div class="legal-links">
 				<a href="/privacy" class="legal-link" aria-label="privacy page">Privacy</a>
-				<a href="/cookies" class="legal-link" aria-label="cookies">Cookie</a>
 			</div>
 		</div>
 	</div>
