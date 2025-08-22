@@ -7,7 +7,7 @@
 <div class="filler">
 	<section class="hero">
 		<div class="text">
-			<h1>Step Into Style</h1>
+			<h3>Step Into Style</h3>
 			<p>
 				Discover the hottest sneakers from the biggest brands. Hand-picked, trending, and always
 				fresh.
@@ -19,7 +19,7 @@
 
 	<section class="hero reverse">
 		<div class="text">
-			<h1>Nike x Off-White</h1>
+			<h3>Nike x Off-White</h3>
 			<p>
 				Explore the legacy of the iconic collab that changed sneaker culture. Limited pairs
 				available now.
@@ -31,7 +31,7 @@
 
 	<section class="hero">
 		<div class="text">
-			<h1>Fresh Drops Weekly</h1>
+			<h3>Fresh Drops Weekly</h3>
 			<p>
 				Be the first to cop the latest releases before they sell out. Explore what’s new in the
 				sneaker world.
