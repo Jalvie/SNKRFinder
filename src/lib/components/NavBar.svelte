@@ -36,7 +36,7 @@
 		padding: 12px 24px;
 		border-bottom: 2px solid black;
 		background: white;
-		z-index: 999;
+		z-index: 10000000;
 		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 		font-family: 'Helvetica Neue', sans-serif;
 	}
