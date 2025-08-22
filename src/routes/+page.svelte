@@ -45,18 +45,17 @@
 	}
 	</script>
 </svelte:head>
-
 <script>
 	import AirForceShoe from '$lib/assets/img/misc/airforceshoe.png';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import AJ1 from '$lib/assets/img/misc/aj1.webp';
-
+	import Filler from '$lib/components/Filler.svelte';
 	let imgsrc = AJ1;
 </script>
 
 <main>
 	<div class="hero">
-		<img src={imgsrc} alt="Hero Shoe" />
+		<img src={imgsrc} alt="Hero Shoe" fetchpriority=high />
 		<div class="overlay">
 			<div class="search">
 				<h1>Find Good Deals On <span class="red">SNKRS</span></h1>
@@ -64,6 +63,9 @@
 			</div>
 		</div>
 	</div>
+
+	
+	<Filler />
 </main>
 
 <style>

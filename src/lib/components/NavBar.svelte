@@ -11,7 +11,7 @@
 		<a href="/" aria-label="Home">
 			<img src={HomeImg} alt="home" />
 		</a>
-		<a href="/popular">
+		<a href="/popular" aria-label="Popular">
 			<img src={StarReg} alt="">
 		</a>
 		<a href="/search" aria-label="Search">
