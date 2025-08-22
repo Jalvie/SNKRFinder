@@ -6,6 +6,7 @@
 		<meta name="author" content="SNKRFinder" />
 		<meta name="robots" content="index, follow" />
 		<meta name="language" content="English" />
+		<link rel="icon" type="image/png" href={shoeInfo.thumbnail || '/assets/favicon/favicon-96x96.png'} />
 		
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="product" />
@@ -61,6 +62,7 @@
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import Loading from '$lib/components/Loading.svelte';
+	import SneakerPageAd from '$lib/components/SneakerPageAd.svelte';
 
 	let id = get(page).params._id;
 	let shoeInfo = null;
@@ -105,47 +107,17 @@
 			</div>
 
 			{#if shoeInfo.resellLinks}
-				<div class="pricing-section">
-					<h3>Resale Prices</h3>
-					<ul class="links">
-						{#each Object.entries(shoeInfo.resellLinks) as [site, link]}
-							{@const price = shoeInfo.lowestResellPrice?.[site.toLowerCase()] || 'N/A'}
-							{@const allPrices = Object.values(shoeInfo.lowestResellPrice || {})}
-							{@const sortedPrices = allPrices.filter(p => typeof p === 'number').sort((a, b) => a - b)}
-							{@const isLowest = price === sortedPrices[0] && sortedPrices.length > 0}
-							{@const isHighest = price === sortedPrices[sortedPrices.length - 1] && sortedPrices.length > 1}
-							{@const isMedium = !isLowest && !isHighest}
-							<li 
-								class="price-button {isLowest ? 'lowest' : isHighest ? 'highest' : 'medium'}"
-								on:click={() => handleClick(link)}
-							>
-								<span class="site-name">{site.toUpperCase()}</span>
-								<span class="price">${price}</span>
-							</li>
-						{/each}
-					</ul>
-				</div>
+				<ul class="links">
+					{#each Object.entries(shoeInfo.resellLinks) as [site, link]}
+						<li on:click={() => handleClick(link)}>
+							{site.toUpperCase()}
+						</li>
+					{/each}
+				</ul>
 			{/if}
 		</div>
-
-		<!-- Additional Information Section -->
-		<div class="additional-info">
-			<div class="info-grid">
-				<div class="info-card">
-					<h3>About This Release</h3>
-					<p>This sneaker was released on {shoeInfo.releaseDate}. The {shoeInfo.colorway} colorway features a unique design that stands out in any collection.</p>
-				</div>
-				
-				<div class="info-card">
-					<h3>Style Details</h3>
-					<p>Style ID {shoeInfo.styleID} identifies this specific model and color combination. Each style ID corresponds to a unique product variation.</p>
-				</div>
-				
-				<div class="info-card">
-					<h3>Market Information</h3>
-					<p>Current resale prices reflect market demand and availability. Prices can vary based on size, condition, and market trends.</p>
-				</div>
-			</div>
+		<div class="ad2">
+			<SneakerPageAd />
 		</div>
 	{:else}
 		<p class="error">Sneaker not found.</p>
@@ -157,9 +129,21 @@
 		margin-top: 6rem;
 		display: flex;
 		justify-content: center;
+		position: relative;
 		align-items: center;
 		padding: 2rem;
 		flex-direction: column;
+	}
+
+	.ad2 {
+		display: flex;
+		height: fit-content;
+		width: fit-content;
+		justify-self: flex-end;
+		position: absolute;
+		top: 50%;
+		right: 12px;
+		transform: translate(-50%, -50%);
 	}
 
 	.sneakerCard {
@@ -190,17 +174,6 @@
 		color: #333;
 	}
 
-	.pricing-section {
-		width: 100%;
-		text-align: center;
-	}
-
-	.pricing-section h3 {
-		margin-bottom: 1rem;
-		color: #333;
-		font-size: 1.3rem;
-	}
-
 	.links {
 		display: flex;
 		justify-content: center;
@@ -209,65 +182,18 @@
 		margin-top: 1rem;
 	}
 
-	.price-button {
+	.links li {
 		list-style: none;
-		padding: 1rem 1.5rem;
-		border-radius: 12px;
+		padding: 0.5rem 1rem;
+		background-color: hsl(0, 83%, 50%);
+		color: white;
+		border-radius: 8px;
 		cursor: pointer;
-		transition: all 0.3s ease;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.5rem;
-		min-width: 120px;
-		border: 2px solid transparent;
+		transition: background 0.2s ease;
 	}
 
-	.price-button.lowest {
-		background-color: #10b981;
-		color: white;
-		border-color: #059669;
-	}
-
-	.price-button.lowest:hover {
-		background-color: #059669;
-		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-	}
-
-	.price-button.medium {
-		background-color: #f59e0b;
-		color: white;
-		border-color: #d97706;
-	}
-
-	.price-button.medium:hover {
-		background-color: #d97706;
-		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
-	}
-
-	.price-button.highest {
-		background-color: #ef4444;
-		color: white;
-		border-color: #dc2626;
-	}
-
-	.price-button.highest:hover {
-		background-color: #dc2626;
-		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
-	}
-
-	.site-name {
-		font-weight: 600;
-		font-size: 0.9rem;
-		letter-spacing: 0.5px;
-	}
-
-	.price {
-		font-size: 1.2rem;
-		font-weight: 700;
+	.links li:hover {
+		background-color: hsl(0, 83%, 40%);
 	}
 
 	.loading,
@@ -276,45 +202,5 @@
 		color: #666;
 		text-align: center;
 		margin-top: 2rem;
-	}
-
-	.additional-info {
-		margin-top: 3rem;
-		width: 100%;
-		max-width: 800px;
-	}
-
-	.info-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 1.5rem;
-		margin-top: 1rem;
-	}
-
-	.info-card {
-		background-color: #f8f9fa;
-		border-radius: 12px;
-		padding: 1.5rem;
-		border-left: 4px solid #ff0000;
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
-	}
-
-	.info-card:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	}
-
-	.info-card h3 {
-		color: #333;
-		margin-bottom: 0.75rem;
-		font-size: 1.1rem;
-		font-weight: 600;
-	}
-
-	.info-card p {
-		color: #666;
-		line-height: 1.5;
-		margin: 0;
-		font-size: 0.95rem;
 	}
 </style>
