@@ -18,4 +18,40 @@
     <changefreq>monthly</changefreq>
     <description>Search for sneakers by name, brand, or style.</description>
   </url>
+  <url>
+    <loc>https://snkrfinder.net/search?q=Nike%20X%20Off%20White</loc>
+    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <description>Search results for Nike X Off White sneakers</description>
+  </url>
+  <url>
+    <loc>https://snkrfinder.net/search?q=air%20jordan%201</loc>
+    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <description>Search results for Air Jordan 1 sneakers</description>
+  </url>
+  <url>
+    <loc>https://snkrfinder.net/search?q=air%20jordan%20shoes%20cheap</loc>
+    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <description>Find cheap Air Jordan shoes and deals</description>
+  </url>
+  <url>
+    <loc>https://snkrfinder.net/search?q=Nike%20Off%20White</loc>
+    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <description>Nike Off White collaboration sneakers and deals</description>
+  </url>
+  <url>
+    <loc>https://snkrfinder.net/search?q=air%20force%201</loc>
+    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <description>Air Force 1 sneakers and best deals</description>
+  </url>
+  <url>
+    <loc>https://snkrfinder.net/search?q=Jordan%20retro</loc>
+    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <description>Jordan Retro sneakers and releases</description>
+  </url>
 </urlset>
