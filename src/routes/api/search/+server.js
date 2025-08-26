@@ -28,9 +28,32 @@ export async function GET({ url }) {
 
 	try {
 		const products = await getProducts(sneaker, limit);
-		return json(products);
+		return json(products, {
+			headers: {
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+			}
+		});
 	} catch (err) {
 		console.error(err);
-		return json({ error: 'Failed to fetch products' }, { status: 500 });
+		return json({ error: 'Failed to fetch products' }, {
+			status: 500,
+			headers: {
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+			}
+		});
 	}
+}
+
+export async function OPTIONS() {
+	return new Response(null, {
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+		}
+	});
 }
